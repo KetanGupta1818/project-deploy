@@ -20,40 +20,10 @@ function getDivision(str){
 
 
 
-/*
-
-contest obj => 
-  1. int id
-  2. string division string
-  3. obj[] problems //Sorted by difficulty
-
-
-
-
-problem obj ->
-   0. String id
-   1. String problem number (A, B1, B2, C)   [index]
-   2. Integer Difficulty
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
 const userProblems = async (req,res) => {
-  ////  console.log(req.body);
     let user = req.body.codeForces_id+"";
     user = user.toLowerCase();
     let raw_user_contests;
@@ -64,10 +34,6 @@ const userProblems = async (req,res) => {
         res.send({contests: undefined});
         return;
     }
-// let user = "java_programmer";
- //   user = "java_programmer";
- //   console.log("user= " + user);
-  // res.send("ok");
    let raw_contests;
     try {
         raw_contests = await axios.get("https://codeforces.com/api/contest.list");
@@ -96,7 +62,6 @@ const userProblems = async (req,res) => {
     const valid_problems = raw_problem_set.data.result.problems.filter((problem) => constestMap.has(problem.contestId));
     let contestToProblemsMap = new Map();
     const user_constests = new Set();
-   // console.log(raw_user_contests.data.result[0].contestId);
     
     raw_user_contests.data.result.forEach((contest) => {
         user_constests.add(contest.contestId);
@@ -113,14 +78,6 @@ const userProblems = async (req,res) => {
     let practice_set = new Set();
     let tried_set = new Set();
     let contest_set = new Set();
-  //  console.log(user_submissions[0]);
-    /*
-        Submission 
-        problem.constestId + problem.index
-        author.participantType
-
-
-    */
    user_submissions.forEach((submission) => {
     let AC = (submission.verdict === "OK");
     if(user_constests.has(submission.contestId)){
@@ -137,8 +94,6 @@ const userProblems = async (req,res) => {
         else tried_set.add(submission.problem.contestId + submission.problem.index);
     }
    });
-  // upsolved_set.forEach(c => console.log(c));
-  //  console.log(user_submissions[0]);
     valid_problems.forEach(prob => {
         let arr = new Array();
         if(contestToProblemsMap.has(prob.contestId)) arr = contestToProblemsMap.get(prob.contestId);
@@ -154,26 +109,17 @@ const userProblems = async (req,res) => {
     let A = new Array();
     for(let [contestId,problems] of contestToProblemsMap.entries()){
         problems = problems.reverse();
- //       console.log(problems[0])
         A.push({contestId, problems});
     }
- //   A.sort((a,b)=>b.contestId - a.contestId);
     let contest_solve_count = contest_set.size;
     let upsolve_solve_count = upsolved_set.size;
     let practice_solve_count = practice_set.size;
-    console.log(contest_solve_count,upsolve_solve_count,practice_solve_count);
     const data = {
         "contests": A,
         "contest_solve_count": contest_solve_count,
         "upsolve_solve_count": upsolve_solve_count,
         "practice_solve_count": practice_solve_count
     }
-    // try {
-    //     await axios.post("/api/v1/users",);
-    // } catch (error) {
-    //     console.log("could not post on api/v1/users");
-    //     console.log(error);
-    // }
     await addUser({
         user_handle: user,
         contest_solve_count: contest_solve_count,

@@ -12,18 +12,14 @@ const userSchema = new mongoose.Schema({
 async function displayAllUsers(req,res){
     
     
- //const User = mongoose.model('User',userSchema);
     const db = await connectToDatabase();
- //     const db = await mongoose.connect("mongodb+srv://ketan:1234@nodeexpresscluster.iqc8gwy.mongodb.net/?retryWrites=true&w=majority");   //For type binding
       const User = db.model('User',userSchema);
       const users = await User.find({});
       res.send(users);
 }
 
 async function addUser(input_user){
-    console.log("input_user= " + input_user.user_handle);
         const db = await connectToDatabase();
-   // const db = await mongoose.connect("mongodb+srv://ketan:1234@nodeexpresscluster.iqc8gwy.mongodb.net/?retryWrites=true&w=majority");   //For type binding
     const User = db.model('User',userSchema);
     const str = input_user.user_handle+"";
     const user_db = await User.find({user_handle: str});
